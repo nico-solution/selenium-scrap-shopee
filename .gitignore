@@ -1,2 +1,4 @@
 chromedriver.exe
 credentials.json
+/chromedriver.exe
+/credentials.json

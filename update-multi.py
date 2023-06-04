@@ -11,14 +11,18 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 # import undetected_chromedriver as uc
 from auth import drive_service
-chrome_options =webdriver.ChromeOptions()
+chrome_options = Options()
+chrome_options.add_argument('--disable-dev-shm-usage')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.add_argument('--disable-extensions')
+
 chrome_options.add_argument(
     "user-data-dir=C:\\Users\\miro\\AppData\\Local\\Google\\Chrome\\User Data")
-chrome_options.add_argument('profile-directory=Profile 2')
-webdriver_service = Service("chromedriver")
-driver = webdriver.Chrome(service=webdriver_service, options=chrome_options)
+chrome_options.add_argument('--profile-directory=Profile 1')
+
+driver = webdriver.Chrome(options=chrome_options)
+driver.implicitly_wait(10)
 # driver = uc.Chrome()
-time.sleep(10)
 values = []
 
 
@@ -51,7 +55,7 @@ def read_range():
             values.append(["", "", ""])
 
     # print('{0} rows retrieved.'.format(len(rows)))
-    driver.close()
+
     # print(priceElement)
 
     # print('{0} rows retrieved.'.format(rows))
@@ -97,3 +101,4 @@ if __name__ == '__main__':
 
     read_range()
     write_range()
+    driver.close()

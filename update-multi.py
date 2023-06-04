@@ -18,7 +18,7 @@ chrome_options.add_argument('--disable-extensions')
 
 chrome_options.add_argument(
     "user-data-dir=C:\\Users\\miro\\AppData\\Local\\Google\\Chrome\\User Data")
-chrome_options.add_argument('--profile-directory=Profile 2')
+chrome_options.add_argument('--profile-directory=Profile 1')
 
 driver = webdriver.Chrome(options=chrome_options)
 driver.implicitly_wait(10)

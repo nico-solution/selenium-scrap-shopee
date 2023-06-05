@@ -159,7 +159,6 @@ def read_range():
     driver.close()
     return
 
-
 def write_range():
 
     # get the ID of the existing sheet

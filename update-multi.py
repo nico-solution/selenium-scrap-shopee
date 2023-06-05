@@ -1,4 +1,5 @@
 from __future__ import print_function
+from random import randint
 import time
 
 from auth import spreadsheet_service
@@ -21,45 +22,139 @@ chrome_options.add_argument(
 chrome_options.add_argument('--profile-directory=Profile 1')
 
 driver = webdriver.Chrome(options=chrome_options)
-driver.implicitly_wait(10)
+
 # driver = uc.Chrome()
 values = []
 
 
 def read_range():
 
-    range_name = 'Sheet1!D2:D5000'  # read an empty row for new data
-
+    range_name = 'Sheet1!D11:D15'  # read an empty row for new data
+    variationRange_name='Sheet1!C11:C15'
     spreadsheet_id = '17IaVsJOqLdBtT3UYChbOdr0pPXr7nUT43T0Qs1ck3nU'
 
-    result = spreadsheet_service.spreadsheets().values().get(
-
-        spreadsheetId=spreadsheet_id, range=range_name).execute()
-
+    result = spreadsheet_service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_name).execute()
+    variationResult=spreadsheet_service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=variationRange_name).execute()
     rows = result.get('values', [])
-    for url in rows:
-        if url != "":
+    
+    for index, url in rows:
+       
+        if url != []:
             if url[0].find('seller') == -1 and url[0].find("product") == -1:
-                driver.get(url[0])
-                elem = WebDriverWait(driver, 30).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, "div.product-briefing")))
-                priceElement = elem.find_element_by_class_name("pqTwkA")
-                price = priceElement.text
-                soldElement = elem.find_element_by_class_name("P3CdcB")
-                sold = soldElement.text
-                quantity_element = driver.find_element_by_xpath(
-                    "//div[contains(text(), 'Quantity')]/following-sibling::div")
-                text = quantity_element.text
-                stock = text.split()[0]
-                values.append([price, sold, stock])
-            values.append(["", "", ""])
+                    driver.get(url[0])
+                    time.sleep(randint(10,15))
+                    variationArray=[]
+                    moq=""
+                    
+                    # elem = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.product-briefing")))
+                    
+                    
+                    priceElement = driver.find_elements(By.CLASS_NAME, "pqTWkA")
+                    price = priceElement[0].text
+                   
+                    variationElement = driver.find_elements(By.CLASS_NAME, "product-variation")
+                    if len(variationElement) > 0:
+                         for element in variationElement:
+                            if variationResult[index] == element.text:
+
+                                variationArray.append(element.text)
+                                element.click()
+                                productTitleElement = driver.find_elements(By.CLASS_NAME, "_44qnta")
+                                productTitle=productTitleElement[-1].find_element(By.XPATH, "./span[last()]").text
+                                moqElement = driver.find_elements(By.CLASS_NAME, "I+H1Co")
+                                if len(moqElement)>0 :
+                                    moqText=moqElement[0].text
+                                    moq = [int(s) for s in moqText.split() if s.isdigit()][0]
+                                else:
+                                    moq=""
+                            
+                                piece_available_element = driver.find_elements(By.CSS_SELECTOR, ".flex.items-center._6lioXX > div:last-child")[0].text
+                                
+                                stock=[int(s) for s in piece_available_element.split() if s.isdigit()][0]
+                                variation=' '.join(variationArray)
+                                values.append([productTitle,variation,price, stock, moq]) 
+                    else: 
+                            variationArray=[]
+                            productTitleElement = driver.find_elements(By.CLASS_NAME, "_44qnta")
+                            productTitle=productTitleElement[-1].find_element(By.XPATH, "./span[last()]").text
+                            moqElement = driver.find_elements(By.CLASS_NAME, "I+H1Co")
+                            if len(moqElement)>0 :
+                                moqText=moqElement[0].text
+                                moq = [int(s) for s in moqText.split() if s.isdigit()][0]
+                            else:
+                                moq=""
+                        
+                            piece_available_element = driver.find_elements(By.CSS_SELECTOR, ".flex.items-center._6lioXX > div:last-child")[0].text
+                            
+                            stock=[int(s) for s in piece_available_element.split() if s.isdigit()][0]
+                            variation=' '.join(variationArray)
+                            values.append([productTitle,variation,price, stock, moq]) 
+                    print(values)
+                            
+
+            elif url[0].find('seller') == -1 and url[0].find("product") >= 0:
+                    driver.get(url[0])
+                    time.sleep(randint(10,15))
+                    variationArray=[]
+                    moq=""
+                    
+                    # elem = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.product-briefing")))
+                    
+                    
+                    priceElement = driver.find_elements(By.CLASS_NAME, "pqTWkA")
+                    price = priceElement[0].text
+                   
+                    variationElement = driver.find_elements(By.CLASS_NAME, "product-variation")
+                    if len(variationElement) > 0:
+                         for element in variationElement:
+                            if variationResult[index] == element.text:
+
+                                variationArray.append(element.text)
+                                element.click()
+                                productTitleElement = driver.find_elements(By.CLASS_NAME, "_44qnta")
+                                productTitle=productTitleElement[-1].find_element(By.XPATH, "./span[last()]").text
+                                moqElement = driver.find_elements(By.CLASS_NAME, "I+H1Co")
+                                if len(moqElement)>0 :
+                                    moqText=moqElement[0].text
+                                    moq = [int(s) for s in moqText.split() if s.isdigit()][0]
+                                else:
+                                    moq=""
+                            
+                                piece_available_element = driver.find_elements(By.CSS_SELECTOR, ".flex.items-center._6lioXX > div:last-child")[0].text
+                                
+                                stock=[int(s) for s in piece_available_element.split() if s.isdigit()][0]
+                                variation=' '.join(variationArray)
+                                values.append([productTitle,variation,price, stock, moq]) 
+                    else: 
+                            variationArray=[]
+                            productTitleElement = driver.find_elements(By.CLASS_NAME, "_44qnta")
+                            productTitle=productTitleElement[-1].find_element(By.XPATH, "./span[last()]").text
+                            moqElement = driver.find_elements(By.CLASS_NAME, "I+H1Co")
+                            if len(moqElement)>0 :
+                                moqText=moqElement[0].text
+                                moq = [int(s) for s in moqText.split() if s.isdigit()][0]
+                            else:
+                                moq=""
+                        
+                            piece_available_element = driver.find_elements(By.CSS_SELECTOR, ".flex.items-center._6lioXX > div:last-child")[0].text
+                            
+                            stock=[int(s) for s in piece_available_element.split() if s.isdigit()][0]
+                            variation=' '.join(variationArray)
+                            values.append([productTitle,variation,price, stock, moq]) 
+                    print(values)
+
+                            
+
+        else:
+             values.append(["", "", "","",""])
+        print(values)
 
     # print('{0} rows retrieved.'.format(len(rows)))
 
     # print(priceElement)
 
     # print('{0} rows retrieved.'.format(rows))
-
+    driver.close()
     return
 
 
@@ -68,7 +163,7 @@ def write_range():
     # get the ID of the existing sheet
     spreadsheet_id = '17IaVsJOqLdBtT3UYChbOdr0pPXr7nUT43T0Qs1ck3nU'
 
-    range_name = 'Sheet1!E2:G5000'  # update the range for three rows
+    range_name = 'Sheet1!E11:I15'  # update the range for three rows
 
     # values = [
 
@@ -101,4 +196,4 @@ if __name__ == '__main__':
 
     read_range()
     write_range()
-    driver.close()
+    

@@ -22,19 +22,19 @@ chrome_options.add_argument(
 chrome_options.add_argument('--profile-directory=Profile 1')
 
 driver = webdriver.Chrome(options=chrome_options)
-from_row_number=2
+from_row_number=7
 to_row_number=12
 # driver = uc.Chrome()
 values = []
 
 
-def scrap_shopee(index,driver,variation_product):
+def scrap_shopee(driver,variation_product):
     variationElement = driver.find_elements(By.CLASS_NAME, "product-variation")
     variationArray=[]
     if len(variationElement) > 0:
         for element in variationElement:
-            if variation_product == element.text:
-                variationArray.append(element.text)
+            if variation_product[0] == element.text:
+                
                 element.click()
                 time.sleep(randint(8,10))
                 priceElement = driver.find_elements(By.CLASS_NAME, "pqTWkA")
@@ -49,9 +49,10 @@ def scrap_shopee(index,driver,variation_product):
                     moq=""
             
                 piece_available_element = driver.find_elements(By.CSS_SELECTOR, ".flex.items-center._6lioXX > div:last-child")[0].text
-                
+                print(piece_available_element)
+                time.sleep(randint(2,4))
                 stock=[int(s) for s in piece_available_element.split() if s.isdigit()][0]
-                variation=' '.join(variationArray)
+                variation=variation_product[0]
                 now = datetime.now()
 
                 current_time = now.strftime("%Y-%m-%d-%H-%M")
@@ -93,14 +94,14 @@ def read_range():
     time.sleep(randint(3,5))
    
     for index, url in enumerate(rows):
-       
+        print(url)
         if url != []:
             if url[0].find('seller') == -1 and url[0].find("product") == -1:
                     driver.get(url[0])
                     time.sleep(randint(10,15))
                     
                     # elem = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.product-briefing")))
-                    result=scrap_shopee(index,driver,variations[index])
+                    result=scrap_shopee(driver,variations[index])
                     print(result,url)
                     # values.append(result)
                     write_range(from_row_number+index,result) 
@@ -111,11 +112,14 @@ def read_range():
                     time.sleep(randint(10,15))
                    
                     # elem = WebDriverWait(driver, 30).until(EC.presence_of_element_located((By.CSS_SELECTOR, "div.product-briefing")))
-                    result=scrap_shopee(index,driver,variations[index])
+                    result=scrap_shopee(driver,variations[index])
                     print(result,url)
                     write_range(from_row_number+index,result) 
 
-                    # values.append(result)  
+            else:        # values.append(result)  
+                now = datetime.now()
+                current_time = now.strftime("%Y-%m-%d-%H-%M")
+                write_range(from_row_number+index,["", "", "","","",current_time])
 
                             
 
@@ -135,6 +139,7 @@ def read_range():
     return
 
 def write_range(rowNumber,data):
+    print(rowNumber,data,"write_range")
 
     # get the ID of the existing sheet
     spreadsheet_id = '17IaVsJOqLdBtT3UYChbOdr0pPXr7nUT43T0Qs1ck3nU'
@@ -147,7 +152,7 @@ def write_range(rowNumber,data):
 
     body = {
 
-        'values': data
+        'values': [data]
 
     }
 

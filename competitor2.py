@@ -23,7 +23,7 @@ chrome_options.add_argument(
 chrome_options.add_argument('--profile-directory=Profile 1')
 
 driver = webdriver.Chrome(options=chrome_options)
-from_row_number=22
+from_row_number=2
 to_row_number=100
 # driver = uc.Chrome()
 values = []
@@ -61,7 +61,7 @@ def scrap_shopee(url,driver,variation_product,before_URL):
                 for element in elements:
                     if "This item has a Minimum Purchase Quantity (MPQ) requirement of" in element.text:
                         moq=re.findall(r'\d+', element.text)[0]
-                        break
+                        
                 # wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '.flex.items-center._6lioXX > div:last-child')))
                 
                 piece_available_element = driver.find_elements(By.CSS_SELECTOR, ".flex.items-center._6lioXX > div:last-child")[0].text
@@ -95,7 +95,7 @@ def scrap_shopee(url,driver,variation_product,before_URL):
             for element in elements:
                 if "This item has a Minimum Purchase Quantity (MPQ) requirement of" in element.text:
                     moq=re.findall(r'\d+', element.text)[0]
-                    break
+                    
             # wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '.flex.items-center._6lioXX > div:last-child')))
 
             piece_available_element = driver.find_elements(By.CSS_SELECTOR, ".flex.items-center._6lioXX > div:last-child")[0].text
@@ -112,7 +112,7 @@ def scrap_shopee(url,driver,variation_product,before_URL):
 
 def read_range():
 
-    range_name = 'Sheet1!D{}:D{}' 
+    range_name = 'Sheet1!K{}:K{}' 
     variationRange_name='Sheet1!C{}:C{}'
     spreadsheet_id = '17IaVsJOqLdBtT3UYChbOdr0pPXr7nUT43T0Qs1ck3nU'
 
@@ -125,13 +125,18 @@ def read_range():
     for index, url in enumerate(rows):
         print(url)
         if url != []:
-            if url[0].find('seller') == -1 and url[0].find("product") == -1:
-                    result=scrap_shopee(url[0],driver,variations[index],rows[index-1][0])
-                    write_range(from_row_number+index,result) 
-            elif url[0].find('seller') == -1 and url[0].find("product") >= 0:
-                    result=scrap_shopee(url[0],driver,variations[index],rows[index-1][0])
-                    write_range(from_row_number+index,result) 
-            else:         
+            if "shopee.sg" in url[0]:    
+                if url[0].find('seller') == -1 and url[0].find("product") == -1:
+                        result=scrap_shopee(url[0],driver,variations[index],rows[index-1][0])
+                        write_range(from_row_number+index,result) 
+                elif url[0].find('seller') == -1 and url[0].find("product") >= 0:
+                        result=scrap_shopee(url[0],driver,variations[index],rows[index-1][0])
+                        write_range(from_row_number+index,result) 
+                else:         
+                    now = datetime.now()
+                    current_time = now.strftime("%H:%M %m-%d-%Y")
+                    write_range(from_row_number+index,["", "", "","","",current_time])
+            else:
                 now = datetime.now()
                 current_time = now.strftime("%H:%M %m-%d-%Y")
                 write_range(from_row_number+index,["", "", "","","",current_time])
@@ -149,7 +154,7 @@ def write_range(rowNumber,data):
     # get the ID of the existing sheet
     spreadsheet_id = '17IaVsJOqLdBtT3UYChbOdr0pPXr7nUT43T0Qs1ck3nU'
 
-    range_name = 'Sheet1!E{}:J{}'  # update the range for three rows
+    range_name = 'Sheet1!L{}:Q{}'  # update the range for three rows
 
     
 

@@ -8,6 +8,7 @@ import os
 import sys
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/scrap")
 from shopee import scrap_shopee
+from lazada import lazada_shopee
 chrome_options = Options()
 chrome_options.add_argument('--disable-dev-shm-usage')
 chrome_options.add_argument('--no-sandbox')
@@ -18,8 +19,8 @@ chrome_options.add_argument(
 chrome_options.add_argument('--profile-directory=Profile 1')
 
 driver = webdriver.Chrome(options=chrome_options)
-from_row_number=7
-to_row_number=15
+from_row_number=531
+to_row_number=4000
 # driver = uc.Chrome()
 values = []
 
@@ -37,23 +38,25 @@ def read_range():
     variations=variationResult.get('values', [])
    
     for index, url in enumerate(rows):
-        print(url)
+        if rows[index-1]==[]: beforeUrl=""
+        else:
+            beforeUrl=rows[index-1][0]
+        print(url,beforeUrl,"beforeurl")
         if url != []:
             if "shopee.sg" in url[0]:
                 if url[0].find('seller') == -1 and url[0].find("product") == -1:
-                        result=scrap_shopee(url[0],driver,variations[index],rows[index-1][0])
+                        result=scrap_shopee(url[0],driver,variations[index],beforeUrl)
                         write_range(from_row_number+index,result) 
                 elif url[0].find('seller') == -1 and url[0].find("product") >= 0:
-                        result=scrap_shopee(url[0],driver,variations[index],rows[index-1][0])
+                        result=scrap_shopee(url[0],driver,variations[index],beforeUrl)
                         write_range(from_row_number+index,result) 
                 else:         
                     now = datetime.now()
                     current_time = now.strftime("%H:%M %m-%d-%Y")
                     write_range(from_row_number+index,["", "", "","","",current_time])
-            elif "lazada" in url[0]: 
-                now = datetime.now()
-                current_time = now.strftime("%H:%M %m-%d-%Y")
-                write_range(from_row_number+index,["", "", "","","",current_time])
+            elif "lazada.sg" in url[0]:
+                result=lazada_shopee(url[0],driver,variations[index],beforeUrl) 
+                write_range(from_row_number+index,result) 
             else:
                 now = datetime.now()
                 current_time = now.strftime("%H:%M %m-%d-%Y")

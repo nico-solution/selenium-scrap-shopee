@@ -19,7 +19,7 @@ chrome_options.add_argument(
 chrome_options.add_argument('--profile-directory=Profile 1')
 
 driver = webdriver.Chrome(options=chrome_options)
-from_row_number=531
+from_row_number=2
 to_row_number=4000
 # driver = uc.Chrome()
 values = []

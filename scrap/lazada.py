@@ -7,7 +7,7 @@ import re
 from selenium.webdriver.support import expected_conditions as EC
 
 
-def lazada_shopee(url,driver,variation_product,before_URL):
+def lazada_shopee(url,driver,before_URL):
     variation=[]
     if before_URL !=url:  
         driver.get(url)
